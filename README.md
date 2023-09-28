@@ -17,5 +17,5 @@ Run the following commands from the `docker` directory in this repo:
 From the main directory: `source .env && go run cmd/url-shortener/main.go`
 
 ## To run tests
-go test ./...
+`go test ./...`
 
