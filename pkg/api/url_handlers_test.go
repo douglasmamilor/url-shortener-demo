@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"io"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -89,11 +88,11 @@ func TestInvalidURL(t *testing.T) {
 
 func TestRedirect(t *testing.T) {
 	url := "/url/redirect/testShortCode"
-	req := httptest.NewRequest(http.MethodPost, url, nil)
+	req := httptest.NewRequest(http.MethodGet, url, nil)
 
 	queryReturn := &model.URL{
 		ID:          "testID",
-		OriginalURL: "http://testURL",
+		OriginalURL: "http://testurl.com",
 		ShortCode:   "testShortCode",
 		CreatedAt:   time.Now(),
 	}
@@ -104,12 +103,8 @@ func TestRedirect(t *testing.T) {
 	serverHandler.ServeHTTP(w, req)
 	resp := w.Result()
 	defer resp.Body.Close()
-	payload, _ := io.ReadAll(resp.Body)
-
-	expected := []byte(`{"original_url":"http://testURL","short_code":"testShortCode"}`)
 
 	assert.Equal(t, http.StatusMovedPermanently, resp.StatusCode)
-	assert.Equal(t, expected, payload)
 }
 
 func TestRedirectWithMissingParam(t *testing.T) {

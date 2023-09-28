@@ -16,7 +16,7 @@ import (
 // URLRoutes sets up the handlers
 func (a *API) URLRoutes(router *chi.Mux) http.Handler {
 	router.Method("POST", "/shorten", Handler(a.shortenURL))
-	router.Method("POST", "/redirect/{shortCode:[a-zA-Z0-9]+}", Handler(a.redirect))
+	router.Method("GET", "/redirect/{shortCode:[a-zA-Z0-9]+}", Handler(a.redirect))
 
 	return router
 }
@@ -73,6 +73,8 @@ func (a *API) redirect(w http.ResponseWriter, r *http.Request) *ServerResponse {
 		"original_url": urlRecord.OriginalURL,
 		"short_code":   shortCode,
 	}
+
+	http.Redirect(w, r, urlRecord.OriginalURL, 301)
 
 	return &ServerResponse{Payload: response, StatusCode: http.StatusMovedPermanently}
 }
