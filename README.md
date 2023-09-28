@@ -4,11 +4,18 @@ This app uses a postgres database running within a docker container. To run the 
 
 ## Step 1: Run the database
 Run the following commands from the `docker` directory in this repo:
-`docker build -t url-shortener-postgres .` (build the image)
-`docker run --detach -p 5432:5432 --name="url-shortener-postgres" url-shortener-postgres` (run it using a user-friendly container name which we need for subsequent steps)
-`docker cp ./url.sql url-shortener-postgres:/docker-entrypoint-initdb.d/url.sql` (copy the db schema file)
-`docker exec -u postgres url-shortener-postgres psql urlshortener urlshortener -f docker-entrypoint-initdb.d/url.sql` (execute it to create the required table)
+- Build the image
+  `docker build -t url-shortener-postgres .`
+- Run it using a user-friendly container name which we need for subsequent steps)
+  `docker run --detach -p 5432:5432 --name="url-shortener-postgres" url-shortener-postgres`
+- Copy the db schema file
+  `docker cp ./url.sql url-shortener-postgres:/docker-entrypoint-initdb.d/url.sql`
+- Execute it to create the required table
+  `docker exec -u postgres url-shortener-postgres psql urlshortener urlshortener -f docker-entrypoint-initdb.d/url.sql`
 
 ## Step 2: Run the app
 From the main directory: `source .env && go run cmd/url-shortener/main.go`
+
+## To run tests
+go test ./...
 
