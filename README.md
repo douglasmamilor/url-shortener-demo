@@ -10,4 +10,5 @@ Run the following commands from the `docker` directory in this repo:
 `docker exec -u postgres url-shortener-postgres psql urlshortener urlshortener -f docker-entrypoint-initdb.d/url.sql` (execute it to create the required table)
 
 ## Step 2: Run the app
-From the main directory: `go run cmd/url-shortener/main.go`
+From the main directory: `source .env && go run cmd/url-shortener/main.go`
+

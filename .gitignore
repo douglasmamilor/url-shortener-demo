@@ -34,9 +34,6 @@ runlocal.sh
 .env
 
 docker/postgres/data/
-docker/redis/data/
-photozo-api
-scratchpad-api
 
 TODOs.org
 
