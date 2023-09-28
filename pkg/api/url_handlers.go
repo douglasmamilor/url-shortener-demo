@@ -5,6 +5,7 @@ import (
 	"hash/maphash"
 	"math/rand"
 	"net/http"
+	"net/url"
 	"time"
 	"url-shortener/pkg/model"
 
@@ -29,6 +30,10 @@ func (a *API) shortenURL(w http.ResponseWriter, r *http.Request) *ServerResponse
 
 	if shorten.URL == "" {
 		return RespondWithError(nil, "missing url parameter", http.StatusBadRequest)
+	}
+
+	if !isURL(shorten.URL) {
+		return RespondWithError(nil, "invalid url provided", http.StatusBadRequest)
 	}
 
 	shortCode := generateShortCode()
@@ -82,4 +87,9 @@ func generateShortCode() string {
 		shortKey[i] = charset[rand.Intn(len(charset))]
 	}
 	return string(shortKey)
+}
+
+func isURL(str string) bool {
+	u, err := url.Parse(str)
+	return err == nil && u.Scheme != "" && u.Host != ""
 }

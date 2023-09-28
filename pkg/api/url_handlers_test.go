@@ -70,13 +70,30 @@ func TestShortenURL(t *testing.T) {
 	assert.Equal(t, http.StatusOK, resp.StatusCode)
 }
 
+func TestInvalidURL(t *testing.T) {
+	shortenURLRequestJSON := []byte(`{ "url": "some_invalid_url" }`)
+	shortenURLRequest := &model.ShortenURLRequest{}
+	_ = json.Unmarshal(shortenURLRequestJSON, &shortenURLRequest)
+	data, _ := json.Marshal(shortenURLRequest)
+
+	url := "/url/shorten"
+	req := httptest.NewRequest(http.MethodPost, url, bytes.NewBuffer(data))
+
+	w := httptest.NewRecorder()
+	serverHandler.ServeHTTP(w, req)
+	resp := w.Result()
+	defer resp.Body.Close()
+
+	assert.Equal(t, http.StatusBadRequest, resp.StatusCode)
+}
+
 func TestRedirect(t *testing.T) {
 	url := "/url/redirect/testShortCode"
 	req := httptest.NewRequest(http.MethodPost, url, nil)
 
 	queryReturn := &model.URL{
 		ID:          "testID",
-		OriginalURL: "testURL",
+		OriginalURL: "http://testURL",
 		ShortCode:   "testShortCode",
 		CreatedAt:   time.Now(),
 	}
@@ -89,8 +106,20 @@ func TestRedirect(t *testing.T) {
 	defer resp.Body.Close()
 	payload, _ := io.ReadAll(resp.Body)
 
-	expected := []byte(`{"original_url":"testURL","short_code":"testShortCode"}`)
+	expected := []byte(`{"original_url":"http://testURL","short_code":"testShortCode"}`)
 
 	assert.Equal(t, http.StatusMovedPermanently, resp.StatusCode)
 	assert.Equal(t, expected, payload)
+}
+
+func TestRedirectWithMissingParam(t *testing.T) {
+	url := "/url/redirect"
+	req := httptest.NewRequest(http.MethodPost, url, nil)
+
+	w := httptest.NewRecorder()
+	serverHandler.ServeHTTP(w, req)
+	resp := w.Result()
+	defer resp.Body.Close()
+
+	assert.Equal(t, http.StatusNotFound, resp.StatusCode)
 }
