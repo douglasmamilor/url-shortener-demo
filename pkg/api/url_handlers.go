@@ -16,6 +16,7 @@ import (
 // URLRoutes sets up the handlers
 func (a *API) URLRoutes(router *chi.Mux) http.Handler {
 	router.Method("POST", "/shorten", Handler(a.shortenURL))
+	// constrain the path variable at the route level so we only allow only alphanumeric values
 	router.Method("GET", "/redirect/{shortCode:[a-zA-Z0-9]+}", Handler(a.redirect))
 
 	return router
